@@ -140,6 +140,45 @@ html, body {
     background: #4a4a4a; color: var(--gold-bright);
 }
 
+/* CONTRACT ADDRESS */
+.ca-box {
+    margin: 18px auto 0; max-width: 420px;
+    display: flex; flex-direction: column; align-items: center; gap: 7px;
+    padding: 12px 16px; position: relative; cursor: pointer;
+    background: #2a2a2a;
+    border-top: 3px solid #4a4a4a; border-left: 3px solid #4a4a4a;
+    border-bottom: 3px solid #1a1a1a; border-right: 3px solid #1a1a1a;
+    transition: all 0.1s;
+}
+.ca-box:hover, .ca-box:active { background: #333333; }
+.ca-label {
+    font-family: 'Press Start 2P', monospace; font-size: 0.5rem;
+    letter-spacing: 1px; color: var(--gold);
+    text-shadow: 2px 2px 0 #1a1a1a;
+}
+.ca-text {
+    font-family: 'VT323', monospace; font-size: 1.1rem;
+    color: var(--gold-bright); word-break: break-all;
+    line-height: 1.15; text-align: center;
+}
+.ca-copied {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Press Start 2P', monospace; font-size: 0.7rem;
+    color: var(--emerald); background: #1a1a1a; padding: 8px 14px;
+    border: 2px solid var(--emerald);
+    opacity: 0; pointer-events: none; transition: opacity 0.15s;
+}
+.ca-box.copied .ca-copied { opacity: 1; }
+
+/* MADE BY CREDIT */
+.made-by {
+    margin-top: 28px;
+    font-family: 'Press Start 2P', monospace; font-size: 0.5rem;
+    letter-spacing: 1px; color: var(--text-dim);
+    text-shadow: 2px 2px 0 #1a1a1a;
+}
+
 /* HUD — blocky pixel bars */
 #hud { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
 #playerStats { position: absolute; top: 12px; left: 12px; width: clamp(180px, 38vw, 300px); }

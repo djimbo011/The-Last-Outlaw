@@ -1552,6 +1552,26 @@ function setupInput() {
     document.getElementById('guideBtn').addEventListener('click', () => {
         document.getElementById('guidePanel').classList.remove('hidden');
     });
+    // Contract address — click to copy
+    const caBox = document.getElementById('caBox');
+    if (caBox) {
+        caBox.addEventListener('click', () => {
+            const ca = document.getElementById('caText').textContent.trim();
+            const showCopied = () => {
+                caBox.classList.add('copied');
+                setTimeout(() => caBox.classList.remove('copied'), 1200);
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(ca).then(showCopied).catch(showCopied);
+            } else {
+                const ta = document.createElement('textarea');
+                ta.value = ca; ta.style.position = 'fixed'; ta.style.opacity = '0';
+                document.body.appendChild(ta); ta.select();
+                try { document.execCommand('copy'); } catch (e) {}
+                document.body.removeChild(ta); showCopied();
+            }
+        });
+    }
     // Close buttons (data-close attribute)
     document.querySelectorAll('.close-btn').forEach(btn => {
         btn.addEventListener('click', () => {

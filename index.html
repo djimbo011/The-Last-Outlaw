@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0a0f06">
+    <title>THE LAST OUTLAW — Sherwood Survival</title>
+    <link rel="stylesheet" href="css/style.css?v=9">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- ===== START SCREEN ===== -->
+    <div id="startScreen" class="overlay">
+        <div class="start-content">
+            <h1 class="game-title">THE LAST<br>OUTLAW</h1>
+            <p class="game-subtitle">Sherwood Forest Survival</p>
+            <p class="lore-text">The Sheriff's men storm the forest. You are the last outlaw standing. Survive 12 minutes, grow stronger, and become a legend of Sherwood.</p>
+            <button id="startBtn" class="btn-primary">ENTER THE FOREST</button>
+            <div class="menu-buttons">
+                <button id="docsBtn" class="btn-menu">DOCS &amp; LORE</button>
+                <button id="guideBtn" class="btn-menu">HOW TO PLAY</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== GAME CANVAS ===== -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- ===== HUD ===== -->
+    <div id="hud" class="hidden">
+        <div id="playerStats">
+            <div class="stat-row"><div class="hp-container"><div class="hp-bar-bg"><div id="hpBar" class="hp-bar-fill"></div></div><span id="hpText" class="bar-text">100 / 100</span></div></div>
+            <div class="stat-row"><div class="xp-container"><div class="xp-bar-bg"><div id="xpBar" class="xp-bar-fill"></div></div><span id="xpText" class="bar-text">0 / 100 XP</span></div></div>
+        </div>
+        <div id="topRight"><div class="level-badge"><span class="level-label">LVL</span><span id="levelNumber" class="level-num">1</span></div></div>
+        <div id="topCenter"><div id="timerDisplay">00:00</div><div id="killCount">Foes Felled: 0</div><div id="stageDisplay">Stage 1</div></div>
+                <div id="abilityBar"></div>
+        <div id="bossHpBar" class="hidden">
+            <div id="bossHpLabel">THE SHERIFF OF NOTTINGHAM</div>
+            <div class="boss-hp-bar-bg"><div id="bossHpFill" class="boss-hp-bar-fill"></div></div>
+        </div>
+        <div id="bossBanner" class="hidden"><span id="bossName">THE SHERIFF OF NOTTINGHAM</span></div>
+    </div>
+
+    <!-- ===== LEVEL UP MODAL ===== -->
+    <div id="levelUpModal" class="overlay hidden">
+        <div class="levelup-content">
+            <h2 class="levelup-title">LEVEL <span id="modalLevelNum">5</span></h2>
+            <p class="levelup-subtitle">Choose your path, outlaw</p>
+            <div id="choiceCards" class="choice-cards"></div>
+        </div>
+    </div>
+
+        <!-- ===== GAME OVER ===== -->
+    <div id="gameOverScreen" class="overlay hidden">
+        <div class="gameover-content">
+            <h1 class="gameover-title">YOU HAVE FALLEN</h1>
+            <div class="gameover-stats">
+                <div class="go-stat"><span class="go-stat-label">Level Reached</span><span id="goLevel" class="go-stat-value">1</span></div>
+                <div class="go-stat"><span class="go-stat-label">Foes Felled</span><span id="goKills" class="go-stat-value">0</span></div>
+                <div class="go-stat"><span class="go-stat-label">Time Survived</span><span id="goTime" class="go-stat-value">00:00</span></div>
+            </div>
+            <button id="restartBtn" class="btn-primary">RISE AGAIN</button>
+        </div>
+    </div>
+
+    <!-- ===== VICTORY SCREEN ===== -->
+    <div id="victoryScreen" class="overlay hidden">
+        <div class="victory-content">
+            <h1 class="victory-title">LEGEND OF SHERWOOD</h1>
+            <p class="victory-subtitle">The forest is free once more</p>
+            <div class="gameover-stats">
+                <div class="go-stat"><span class="go-stat-label">Final Level</span><span id="vLevel" class="go-stat-value">1</span></div>
+                <div class="go-stat"><span class="go-stat-label">Foes Felled</span><span id="vKills" class="go-stat-value">0</span></div>
+                <div class="go-stat"><span class="go-stat-label">Time Survived</span><span id="vTime" class="go-stat-value">00:00</span></div>
+            </div>
+            <button id="victoryRestartBtn" class="btn-primary">PLAY AGAIN</button>
+        </div>
+    </div>
+
+    <!-- ===== MOBILE CONTROLS ===== -->
+    <div id="mobileControls" class="hidden">
+        <div id="joystickZone"><div id="joystickBase"><div id="joystickKnob"></div></div></div>
+        <button id="pauseBtn" class="pause-btn">❚❚</button>
+    </div>
+
+    <!-- ===== PAUSE ===== -->
+    <div id="pauseScreen" class="overlay hidden">
+        <div class="pause-content">
+            <h2>PAUSED</h2>
+            <button id="resumeBtn" class="btn-primary">RESUME HUNT</button>
+            <button id="quitBtn" class="btn-secondary">LEAVE FOREST</button>
+        </div>
+    </div>
+
+        <!-- ===== DOCS & LORE PANEL ===== -->
+    <div id="docsPanel" class="overlay hidden">
+        <div class="docs-content">
+            <button class="close-btn" data-close="docsPanel">✕</button>
+            <div class="docs-hero">
+                <h2 class="docs-title">DOCS &amp; LORE</h2>
+                <p class="docs-subtitle">The Chronicle of Sherwood</p>
+            </div>
+            <div class="docs-divider"><div class="docs-divider-line"></div><div class="docs-divider-diamond"></div><div class="docs-divider-line"></div></div>
+            <div class="docs-body">
+
+            <div class="docs-section">
+                <h3>The Legend Begins</h3>
+                <p>In the heart of Sherwood Forest, where ancient oaks whisper secrets older than the crown, a single outlaw stands against the tide of tyranny. The Sheriff has sent his armies to burn the woodland to ash — but <strong>Robin Hood</strong> does not flee. He fights.</p>
+                <p>This is a survival arena where every second is a battle. Every tree sways with living wind, every character walks with weight and purpose, and the forest breathes with ambient motion. You are not playing a spreadsheet — you are standing in a world that wants you dead.</p>
+                <p class="lore-quote">“It is not for a man to be proud of his birth, nor of his power; but of his deeds and his heart.” — The spirit of Sherwood.</p>
+            </div>
+
+            <div class="docs-section">
+                <h3><svg class="section-icon" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="map1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c4b890"/><stop offset="1" stop-color="#8a7a50"/></linearGradient></defs><path d="M3 6 L8 5 L13 7 L18 5 L21 7 L21 19 L16 20 L11 18 L6 20 L3 18 Z" fill="url(#map1)" stroke="#6a5a30" stroke-width="0.8"/><path d="M8 5 L8 19 M13 7 L13 18" stroke="#8a7a50" stroke-width="0.5" stroke-dasharray="2 1"/><circle cx="14" cy="12" r="3" fill="none" stroke="#d4af37" stroke-width="1"/><path d="M14 9 L14.5 11.5 L17 12 L14.5 12.5 L14 15 L13.5 12.5 L11 12 L13.5 11.5 Z" fill="#d4af37"/></svg> Maps of the Realm</h3>
+                <div class="docs-grid">
+                    <div class="docs-card">
+                        <div class="docs-card-top">
+                            <div class="docs-icon-svg"><svg width="44" height="44" viewBox="0 0 48 48"><defs><radialGradient id="g1" cx="0.5" cy="0.35"><stop offset="0" stop-color="#5a9a3a"/><stop offset="1" stop-color="#1a3a0a"/></radialGradient></defs><ellipse cx="24" cy="18" rx="18" ry="14" fill="url(#g1)"/><path d="M14 16 Q18 10 22 14 Q26 8 30 14 Q34 10 36 18" stroke="#3a6a1a" stroke-width="0.8" fill="none" opacity="0.6"/><path d="M16 22 Q20 16 24 20 Q28 16 32 22" stroke="#3a6a1a" stroke-width="0.6" fill="none" opacity="0.5"/><rect x="21" y="28" width="6" height="16" rx="1" fill="#5a3a1a" stroke="#3a2010" stroke-width="0.5"/><path d="M24 34 C20 34 16 32 14 28 M24 34 C28 34 32 32 34 28" stroke="#5a3a1a" stroke-width="1.5" fill="none"/><circle cx="10" cy="40" r="3" fill="#3a6a1a" opacity="0.6"/><circle cx="38" cy="42" r="3.5" fill="#3a6a1a" opacity="0.6"/><circle cx="6" cy="34" r="2" fill="#4a7a2a" opacity="0.5"/><circle cx="42" cy="34" r="2" fill="#4a7a2a" opacity="0.5"/><path d="M4 44 L44 44" stroke="#2a4a1a" stroke-width="1"/></svg></div>
+                            <div><span class="rarity-badge rarity-legendary">Playable</span><strong>Sherwood Forest</strong></div>
+                        </div>
+                        <p>The legendary hideout. Dense oaks, mossy ground, dappled sunlight. ~29 stages over 12 minutes. 3 boss encounters every 4 minutes.</p>
+                        <div class="docs-stats"><span class="stat-pill cd">12 min</span><span class="stat-pill special">3 Bosses</span><span class="stat-pill xp">29 Stages</span></div>
+                    </div>
+                    <div class="docs-card locked">
+                        <div class="docs-card-top">
+                            <div class="docs-icon-svg"><svg width="44" height="44" viewBox="0 0 48 48"><defs><linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9a9aaa"/><stop offset="1" stop-color="#5a5a6a"/></linearGradient></defs><path d="M6 18 L6 12 L10 12 L10 18 L14 18 L14 12 L18 12 L18 18 L22 18 L22 12 L26 12 L26 18 L30 18 L30 12 L34 12 L34 18 L38 18 L38 12 L42 12 L42 18" fill="#7a7a8a" stroke="#4a4a5a" stroke-width="0.5"/><rect x="6" y="18" width="36" height="24" fill="url(#g2)" stroke="#4a4a5a" stroke-width="0.5"/><rect x="8" y="20" width="3" height="4" fill="#3a3a4a"/><rect x="14" y="20" width="3" height="4" fill="#3a3a4a"/><rect x="20" y="20" width="3" height="4" fill="#3a3a4a"/><rect x="26" y="20" width="3" height="4" fill="#3a3a4a"/><rect x="32" y="20" width="3" height="4" fill="#3a3a4a"/><rect x="38" y="20" width="3" height="4" fill="#3a3a4a"/><rect x="16" y="28" width="6" height="10" rx="0.5" fill="#2a2a3a"/><path d="M19 28 L19 24" stroke="#2a2a3a" stroke-width="1.5"/><path d="M19 24 L26 24 L24 27 L26 30 L19 30" fill="#cc3333" stroke="#882222" stroke-width="0.5"/><rect x="29" y="24" width="8" height="14" rx="0.5" fill="#3a3a4a" stroke="#4a4a5a" stroke-width="0.3"/><line x1="4" y1="42" x2="44" y2="42" stroke="#3a3a2a" stroke-width="1.5"/></svg></div>
+                            <div><span class="rarity-badge rarity-common">Coming Soon</span><strong>Nottingham Castle</strong></div>
+                        </div>
+                        <p>The Sheriff's fortress courtyard. Stone walls, torches, battlements. Harder enemies, tighter quarters.</p>
+                    </div>
+                    <div class="docs-card locked">
+                        <div class="docs-card-top">
+                            <div class="docs-icon-svg"><svg width="44" height="44" viewBox="0 0 48 48"><defs><linearGradient id="g3" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7a6a4a"/><stop offset="1" stop-color="#4a3a1a"/></linearGradient></defs><rect x="0" y="28" width="48" height="16" fill="#3a5a1a" opacity="0.4"/><path d="M4 30 Q20 24 44 32 L44 38 Q20 30 4 38 Z" fill="url(#g3)" stroke="#3a2a0a" stroke-width="0.5"/><path d="M4 34 L44 35" stroke="#5a4a2a" stroke-width="0.5" stroke-dasharray="3 2"/><circle cx="8" cy="22" r="5" fill="#3a6a1a"/><circle cx="8" cy="22" r="3" fill="#4a8a2a" opacity="0.5"/><rect x="7" y="26" width="2" height="5" fill="#5a3a1a"/><circle cx="40" cy="20" r="6" fill="#3a6a1a"/><circle cx="40" cy="20" r="4" fill="#4a8a2a" opacity="0.5"/><rect x="39" y="25" width="2" height="6" fill="#5a3a1a"/><circle cx="20" cy="18" r="3" fill="#3a6a1a" opacity="0.6"/><line x1="14" y1="42" x2="34" y2="42" stroke="#d4af37" stroke-width="0.8" stroke-dasharray="2 3" opacity="0.4"/></svg></div>
+                            <div><span class="rarity-badge rarity-common">Coming Soon</span><strong>The King's Road</strong></div>
+                        </div>
+                        <p>Open highway between towns. Wagon convoys, ambush points. Ranged-heavy waves.</p>
+                    </div>
+                    <div class="docs-card locked">
+                        <div class="docs-card-top">
+                            <div class="docs-icon-svg"><svg width="44" height="44" viewBox="0 0 48 48"><defs><linearGradient id="g4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b4423"/><stop offset="1" stop-color="#3a2010"/></linearGradient></defs><rect x="8" y="22" width="32" height="20" rx="1" fill="url(#g4)" stroke="#2a1808" stroke-width="0.6"/><rect x="8" y="18" width="32" height="6" rx="1" fill="url(#g4)" stroke="#2a1808" stroke-width="0.6"/><rect x="8" y="22" width="32" height="2" fill="#d4af37" opacity="0.6"/><rect x="8" y="36" width="32" height="2" fill="#d4af37" opacity="0.4"/><rect x="20" y="24" width="8" height="8" rx="0.5" fill="#d4af37" stroke="#8a6020" stroke-width="0.5"/><circle cx="24" cy="28" r="1.5" fill="#2a1808"/><path d="M24 29 L24 32" stroke="#2a1808" stroke-width="1"/><path d="M24 12 C22 14 21 16 22 18 C23 20 25 20 26 18 C27 16 26 14 24 12 Z" fill="#cc3333" opacity="0.7"/><path d="M24 12 L24 20" stroke="#882222" stroke-width="0.4"/><circle cx="16" cy="14" r="1" fill="#d4af37" opacity="0.5"/><circle cx="32" cy="14" r="1" fill="#d4af37" opacity="0.5"/></svg></div>
+                            <div><span class="rarity-badge rarity-common">Locked</span><strong>Map 4 — ???</strong></div>
+                        </div>
+                        <p>A mysterious fourth map. Shrouded in mystery. Coming in a future update.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="docs-section">
+                <h3><svg class="section-icon" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="sd1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4af37"/><stop offset="1" stop-color="#8a7020"/></linearGradient></defs><circle cx="12" cy="12" r="9" fill="none" stroke="url(#sd1)" stroke-width="1.5"/><path d="M12 12 L12 5" stroke="#d4af37" stroke-width="1.5" stroke-linecap="round"/><path d="M12 5 L10.5 7 M12 5 L13.5 7" stroke="#d4af37" stroke-width="1.2"/><path d="M12 12 L17 15" stroke="#ff6644" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="12" r="1.5" fill="#d4af37"/><path d="M3 12 L5 11 M19 12 L21 11" stroke="#8a7020" stroke-width="1"/></svg> Stage &amp; Difficulty</h3>
+                <p>Each map lasts <strong>12 minutes</strong> (~29 stages). You advance by surviving — each stage lasts 25 seconds. A boss appears every 4 minutes (3 total). When a boss spawns, <strong>all small enemies vanish</strong> — it becomes a pure 1v1 duel to the death.</p>
+                <p>Difficulty scales gradually: enemy HP increases ~10% per minute, enemy <strong>damage +2% every 2 minutes (max +10%)</strong>, and an additional <strong>+8% HP per 5 player levels</strong>. Spawn rates accelerate slowly. After 3 minutes, Armored Knights join the fray. <strong>Survive all 12 minutes to achieve victory!</strong></p>
+            </div>
+
+            <div class="docs-section">
+                <h3><svg class="section-icon" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="bw1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8c46a"/><stop offset="1" stop-color="#a07020"/></linearGradient></defs><path d="M4 4 Q4 12 4 20" fill="none" stroke="url(#bw1)" stroke-width="2" stroke-linecap="round"/><path d="M4 4 Q12 8 4 20" fill="none" stroke="url(#bw1)" stroke-width="1.5"/><line x1="4" y1="4" x2="4" y2="20" stroke="#ddd" stroke-width="0.5" stroke-dasharray="2 1"/><line x1="2" y1="12" x2="20" y2="12" stroke="#c0c0c0" stroke-width="1.2"/><path d="M20 12 L17 10 M20 12 L17 14" stroke="#c0c0c0" stroke-width="1" fill="none"/><path d="M2 12 L4 11 L4 13 Z" fill="#d4af37"/><path d="M8 10 L10 12 L8 14 L6 12 Z" fill="#ff6644" opacity="0.7"/></svg> Weapons Arsenal</h3>
+                <div class="docs-grid">
+                    <div class="docs-card">
+                        <div class="docs-card-top">
+                            <div class="docs-icon-svg"><svg width="44" height="44" viewBox="0 0 48 48"><defs><linearGradient id="wb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8c46a"/><stop offset="1" stop-color="#a07020"/></linearGradient><linearGradient id="wb2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ddeeff"/><stop offset="1" stop-color="#8899bb"/></linearGradient></defs><path d="M10 6 Q10 24 10 42" fill="none" stroke="url(#wb)" stroke-width="3.5" stroke-linecap="round"/><path d="M10 6 Q26 14 10 42" fill="none" stroke="url(#wb)" stroke-width="2.5"/><line x1="10" y1="6" x2="10" y2="42" stroke="#ddd" stroke-width="0.8" stroke-dasharray="3 2" opacity="0.7"/><line x1="8" y1="24" x2="40" y2="24" stroke="url(#wb2)" stroke-width="2" stroke-linecap="round"/><path d="M40 24 L35 21 M40 24 L35 27" stroke="url(#wb2)" stroke-width="1.5" fill="none"/><path d="M8 24 L11 22 L11 26 Z" fill="#d4af37"/><path d="M14 20 L18 24 L14 28 L10 24 Z" fill="#cc3333" opacity="0.8"/><path d="M14 20 L14 28" stroke="#882222" stroke-width="0.5"/></svg></div>
+                            <div><span class="rarity-badge rarity-rare">Starting Weapon</span><strong>Longbow</strong></div>
+                        </div>
+                        <p>Robin Hood's signature. A single piercing arrow that passes clean through enemies. Slow draw, devastating impact.</p>
+                        <div class="docs-stats"><span class="stat-pill dmg">34 DMG</span><span class="stat-pill cd">1.3s CD</span><span class="stat-pill">Pierce</span></div>
+                    </div>
+                    <div class="docs-card">
+                        <div class="docs-card-top">
+                            <div class="docs-icon-svg"><svg width="44" height="44" viewBox="0 0 48 48"><defs><linearGradient id="wc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#aa8844"/><stop offset="1" stop-color="#6a4a14"/></linearGradient></defs><path d="M8 18 Q24 14 40 18" fill="none" stroke="url(#wc)" stroke-width="3" stroke-linecap="round"/><line x1="8" y1="18" x2="40" y2="18" stroke="#ccc" stroke-width="0.8" opacity="0.6"/><rect x="20" y="18" width="3" height="20" rx="0.5" fill="#5a3a10"/><rect x="18" y="36" width="7" height="4" rx="1" fill="#4a2a08"/><rect x="21" y="14" width="2" height="6" fill="#888"/><line x1="21" y1="14" x2="40" y2="14" stroke="#ddeeff" stroke-width="1.5"/><path d="M40 14 L36 12 M40 14 L36 16" stroke="#ddeeff" stroke-width="1" fill="none"/><path d="M21 14 L18 12 L19 14 L18 16 Z" fill="#cc3333" opacity="0.7"/></svg></div>
+                            <div><span class="rarity-badge rarity-common">Common</span><strong>Crossbow</strong></div>
+                        </div>
+                        <p>Fast-loading bolts. Low damage but very rapid fire. Great against swarms of weak enemies.</p>
+                        <div class="docs-stats"><span class="stat-pill dmg">22 DMG</span><span class="stat-pill cd">0.55s CD</span></div>
+                    </div>
+                    <div class="docs-card">
+                        <div class="docs-card-top">
+                            <div class="docs-icon-svg"><svg width="44" height="44" viewBox="0 0 48 48"><defs><linearGradient id="wd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ddeeff"/><stop offset="1" stop-color="#8899bb"/></linearGradient></defs><g transform="rotate(15 24 24)"><path d="M20 6 L22 6 L23 30 L20 33 L17 30 L18 6 Z" fill="url(#wd)" stroke="#667799" stroke-width="0.5"/><rect x="17.5" y="28" width="5" height="2.5" fill="#6b4423"/><rect x="19" y="30" width="2" height="5" rx="0.5" fill="#4a2a10"/><circle cx="20" cy="36" r="1.5" fill="#d4af37"/></g><g transform="rotate(-15 24 24)"><path d="M26 6 L28 6 L29 30 L26 33 L23 30 L24 6 Z" fill="url(#wd)" stroke="#667799" stroke-width="0.5"/><rect x="23.5" y="28" width="5" height="2.5" fill="#6b4423"/><rect x="25" y="30" width="2" height="5" rx="0.5" fill="#4a2a10"/><circle cx="26" cy="36" r="1.5" fill="#d4af37"/></g></svg></div>
+                            <div><span class="rarity-badge rarity-rare">Rare</span><strong>Throwing Daggers</strong></div>
+                        </div>
+                        <p>Hurls 3 daggers in a spread. Solid burst damage, ideal for groups closing in from multiple angles.</p>
+                        <div class="docs-stats"><span class="stat-pill dmg">22 DMG</span><span class="stat-pill cd">1.1s CD</span><span class="stat-pill">x3 Spread</span></div>
+                    </div>
+                    <div class="docs-card">
+                        <div class="docs-card-top">
+                            <div class="docs-icon-svg"><svg width="44" height="44" viewBox="0 0 48 48"><defs><radialGradient id="ws" cx="0.4" cy="0.3"><stop offset="0" stop-color="#ccccc0"/><stop offset="1" stop-color="#777766"/></radialGradient></defs><path d="M8 8 Q20 18 16 30" fill="none" stroke="#5a3a1a" stroke-width="2.5" stroke-linecap="round"/><path d="M40 8 Q28 18 32 30" fill="none" stroke="#5a3a1a" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="24" cy="32" rx="10" ry="8" fill="url(#ws)" stroke="#555544" stroke-width="0.8"/><ellipse cx="20" cy="28" rx="4" ry="2.5" fill="#ddddd0" opacity="0.4"/><circle cx="24" cy="18" r="5" fill="url(#ws)" stroke="#555544" stroke-width="0.6"/><ellipse cx="22" cy="16" rx="2" ry="1.2" fill="#ddddd0" opacity="0.4"/></svg></div>
+                            <div><span class="rarity-badge rarity-common">Common</span><strong>Sling Stones</strong></div>
+                        </div>
+                        <p>Short-range spray of smooth river stones. Cheap, fast, wide cone. Perfect for shredding close packs.</p>
+                        <div class="docs-stats"><span class="stat-pill dmg">13 DMG</span><span class="stat-pill cd">0.4s CD</span><span class="stat-pill">x2 Cone</span></div>
+                    </div>
+                    <div class="docs-card">
+                        <div class="docs-card-top">
+                            <div class="docs-icon-svg"><svg width="44" height="44" viewBox="0 0 48 48"><defs><linearGradient id="wa" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c08040"/><stop offset="1" stop-color="#6a4020"/></linearGradient><linearGradient id="wa2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cccccc"/><stop offset="1" stop-color="#777777"/></linearGradient></defs><circle cx="24" cy="24" r="16" fill="none" stroke="url(#wa)" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.5"/><rect x="22.5" y="10" width="3" height="28" rx="0.5" fill="url(#wa)" stroke="#5a3010" stroke-width="0.5"/><path d="M12 14 L24 12 L24 20 L12 18 Z" fill="url(#wa2)" stroke="#666" stroke-width="0.5"/><path d="M36 14 L24 12 L24 20 L36 18 Z" fill="url(#wa2)" stroke="#666" stroke-width="0.5"/><path d="M12 34 L24 32 L24 40 L12 38 Z" fill="url(#wa2)" stroke="#666" stroke-width="0.5"/><path d="M36 34 L24 32 L24 40 L36 38 Z" fill="url(#wa2)" stroke="#666" stroke-width="0.5"/><circle cx="24" cy="24" r="2" fill="#d4af37"/></svg></div>
+                            <div><span class="rarity-badge rarity-epic">Epic</span><strong>Spinning Axes</strong></div>
+                        </div>
+                        <p>Axes orbit your body in a deadly ring, slicing any enemy that dares approach. Your personal shield of steel.</p>
+                        <div class="docs-stats"><span class="stat-pill dmg">18 DMG</span><span class="stat-pill">Orbit x2</span><span class="stat-pill">Defense</span></div>
+                    </div>
+                    <div class="docs-card">
+                        <div class="docs-card-top">
+                            <div class="docs-icon-svg"><svg width="44" height="44" viewBox="0 0 48 48"><defs><linearGradient id="wf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffdd44"/><stop offset="0.5" stop-color="#ff6600"/><stop offset="1" stop-color="#aa2200"/></linearGradient><radialGradient id="wf2" cx="0.5" cy="0.5"><stop offset="0" stop-color="#ffcc00"/><stop offset="1" stop-color="#ff4400"/></radialGradient></defs><line x1="6" y1="10" x2="38" y2="38" stroke="#5a3a1a" stroke-width="2" stroke-linecap="round"/><path d="M38 38 L33 35 M38 38 L35 33" stroke="#ddeeff" stroke-width="1.2" fill="none"/><path d="M6 10 L9 8 L9 12 Z" fill="#ddeeff"/><path d="M10 12 C8 8 12 6 10 2 C14 4 16 8 14 14 C16 12 18 8 16 4 C20 8 18 16 12 16 C8 14 8 12 10 12 Z" fill="url(#wf)"/><circle cx="14" cy="20" r="2" fill="url(#wf2)" opacity="0.7"/><circle cx="8" cy="6" r="1.5" fill="#ffaa00" opacity="0.5"/><circle cx="18" cy="10" r="1" fill="#ffdd44" opacity="0.6"/></svg></div>
+                            <div><span class="rarity-badge rarity-legendary">Legendary</span><strong>Fire Arrows</strong></div>
+                        </div>
+                        <p>Explosive arrows that burst on impact, dealing devastating area damage. Slow reload, but when they hit — everything burns.</p>
+                        <div class="docs-stats"><span class="stat-pill dmg">48 DMG</span><span class="stat-pill cd">2.0s CD</span><span class="stat-pill special">AoE Burst</span></div>
+                    </div>
+                </div>
+                <p style="margin-top:12px">Each weapon can be upgraded up to <strong>5 levels</strong> via the level-up choice system, gaining damage, projectiles, and fire rate.</p>
+            </div>
+
+            <div class="docs-section">
+                <h3><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="#d4af37" stroke-width="2"><path d="M12 2l3 7h7l-6 4 2 8-6-4-6 4 2-8-6-4h7z"/></svg> Abilities — Passive Powers</h3>
+                <div class="docs-grid">
+                    <div class="docs-card"><div class="docs-card-top"><div class="docs-icon-svg"><svg width="40" height="40" viewBox="0 0 36 36"><defs><linearGradient id="ab1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a9a3a"/><stop offset="1" stop-color="#2a6a1a"/></linearGradient></defs><path d="M10 22 L10 30 L18 30 L18 26 L22 26 L22 22 L26 22 L26 18 L18 18 L10 22 Z" fill="url(#ab1)" stroke="#1a4a0a" stroke-width="0.8"/><path d="M26 18 C30 14 32 10 33 4 C31 10 29 14 26 18 Z" fill="#cc3333" stroke="#882222" stroke-width="0.5"/><path d="M26 18 L28 6" stroke="#aa2222" stroke-width="0.4"/><path d="M28 16 C30 14 31 12 31 9" stroke="#ff6666" stroke-width="0.4" fill="none" opacity="0.6"/><path d="M6 20 L4 22 M6 24 L4 26" stroke="#d4af37" stroke-width="0.8" opacity="0.5"/></svg></div><div><span class="rarity-badge rarity-common">Common</span><strong>Merry Men's Swiftness</strong></div></div><p>+15% movement speed. Outrun the horde. Stackable up to 3x.</p></div>
+                    <div class="docs-card"><div class="docs-card-top"><div class="docs-icon-svg"><svg width="40" height="40" viewBox="0 0 36 36"><defs><linearGradient id="ab2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff5566"/><stop offset="1" stop-color="#aa2222"/></linearGradient></defs><path d="M18 6 C12 6 8 10 8 16 C8 22 14 28 18 32 C22 28 28 22 28 16 C28 10 24 6 18 6 Z" fill="url(#ab2)" stroke="#882222" stroke-width="1"/><path d="M18 14 C16 14 14 16 14 19 C14 22 18 26 18 26 C18 26 22 22 22 19 C22 16 20 14 18 14 Z" fill="#4a8a2a" stroke="#2a6a1a" stroke-width="0.6"/><path d="M18 14 L18 26" stroke="#2a6a1a" stroke-width="0.4"/></svg></div><div><span class="rarity-badge rarity-common">Common</span><strong>Forest Vigor</strong></div></div><p>+25 max HP and instant full heal. Stackable up to 3x.</p></div>
+                    <div class="docs-card"><div class="docs-card-top"><div class="docs-icon-svg"><svg width="40" height="40" viewBox="0 0 36 36"><defs><radialGradient id="ab3" cx="0.5" cy="0.5"><stop offset="0" stop-color="#ffaa44"/><stop offset="1" stop-color="#cc7722"/></radialGradient></defs><circle cx="18" cy="18" r="13" fill="none" stroke="#882222" stroke-width="1.5"/><circle cx="18" cy="18" r="9" fill="none" stroke="#cc7722" stroke-width="1.2"/><circle cx="18" cy="18" r="5" fill="none" stroke="#ffaa44" stroke-width="1"/><circle cx="18" cy="18" r="2" fill="url(#ab3)"/><line x1="6" y1="6" x2="20" y2="20" stroke="#ddeeff" stroke-width="1.5" stroke-linecap="round"/><path d="M20 20 L17 18 M20 20 L18 17" stroke="#ddeeff" stroke-width="1" fill="none"/><path d="M6 6 L8 4 L9 6 L7 7 Z" fill="#cc3333" opacity="0.8"/></svg></div><div><span class="rarity-badge rarity-rare">Rare</span><strong>Sharpshooter</strong></div></div><p>+18% weapon damage across the board. Stackable up to 3x.</p></div>
+                    <div class="docs-card"><div class="docs-card-top"><div class="docs-icon-svg"><svg width="40" height="40" viewBox="0 0 36 36"><defs><linearGradient id="ab4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5599ff"/><stop offset="1" stop-color="#224488"/></linearGradient></defs><path d="M6 6 Q6 18 6 30" fill="none" stroke="url(#ab4)" stroke-width="2.5" stroke-linecap="round"/><path d="M6 6 Q18 12 6 30" fill="none" stroke="url(#ab4)" stroke-width="2"/><line x1="6" y1="6" x2="6" y2="30" stroke="#ddd" stroke-width="0.6" opacity="0.5"/><line x1="6" y1="18" x2="26" y2="18" stroke="#ddeeff" stroke-width="1.5"/><path d="M26 18 L22 15 M26 18 L22 21" stroke="#ddeeff" stroke-width="1" fill="none"/><path d="M4 18 L7 16 L7 20 Z" fill="#d4af37"/><circle cx="20" cy="18" r="1.5" fill="#66aaff"/><path d="M18 16 L20 18 L18 20 L16 18 Z" fill="#cc3333" opacity="0.7"/></svg></div><div><span class="rarity-badge rarity-rare">Rare</span><strong>Quick Draw</strong></div></div><p>-12% attack cooldown. Fire faster. Stackable up to 3x.</p></div>
+                    <div class="docs-card"><div class="docs-card-top"><div class="docs-icon-svg"><svg width="40" height="40" viewBox="0 0 36 36"><defs><linearGradient id="ab5" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dd6644"/><stop offset="1" stop-color="#aa3322"/></linearGradient></defs><path d="M10 8 L10 16 Q10 26 18 28 Q26 26 26 16 L26 8 L22 8 L22 16 Q22 22 18 23 Q14 22 14 16 L14 8 Z" fill="url(#ab5)" stroke="#882211" stroke-width="0.8"/><path d="M18 28 L18 34" stroke="url(#ab5)" stroke-width="2.5" stroke-linecap="round"/><line x1="30" y1="6" x2="18" y2="18" stroke="#ddeeff" stroke-width="1.2"/><path d="M18 18 L20 16 M18 18 L16 16" stroke="#ddeeff" stroke-width="0.8" fill="none"/><path d="M30 6 L28 4 L31 4 L31 7 Z" fill="#cc3333" opacity="0.7"/><path d="M6 4 L4 6 M32 10 L34 8" stroke="#dd6644" stroke-width="0.8" opacity="0.5"/></svg></div><div><span class="rarity-badge rarity-rare">Rare</span><strong>Arrow Retrieval</strong></div></div><p>+70% pickup range. XP gems come to you. Stackable up to 3x.</p></div>
+                    <div class="docs-card"><div class="docs-card-top"><div class="docs-icon-svg"><svg width="40" height="40" viewBox="0 0 36 36"><defs><radialGradient id="ab6" cx="0.5" cy="0.4"><stop offset="0" stop-color="#88ee99"/><stop offset="1" stop-color="#228844"/></radialGradient></defs><circle cx="18" cy="18" r="14" fill="#44cc66" opacity="0.15"/><path d="M18 6 C12 10 10 18 13 26 C16 30 20 30 23 26 C26 18 24 10 18 6 Z" fill="url(#ab6)" stroke="#228844" stroke-width="1"/><path d="M18 6 L18 30" stroke="#1a6a33" stroke-width="0.6"/><path d="M18 12 C16 13 15 15 15 18 M18 12 C20 13 21 15 21 18 M18 18 C16 19 15 21 15.5 24 M18 18 C20 19 21 21 20.5 24" stroke="#1a6a33" stroke-width="0.4" fill="none" opacity="0.5"/><circle cx="19" cy="16" r="1.5" fill="#aaeebb" opacity="0.7"/></svg></div><div><span class="rarity-badge rarity-common">Common</span><strong>Nature's Blessing</strong></div></div><p>Regenerate 1.5 HP per second. Stackable up to 3x.</p></div>
+                    <div class="docs-card"><div class="docs-card-top"><div class="docs-icon-svg"><svg width="36" height="36" viewBox="0 0 36 36"><path d="M18 4 L20 12 L28 12 L22 18 L24 26 L18 22 L12 26 L14 18 L8 12 L16 12 Z" fill="#c46bff" stroke="#8833cc" stroke-width="1.5"/></svg></div><div><span class="rarity-badge rarity-epic">Epic</span><strong>Arrow Volley</strong></div></div><p>+1 projectile to every weapon. Once only — choose wisely.</p></div>
+                    <div class="docs-card"><div class="docs-card-top"><div class="docs-icon-svg"><svg width="40" height="40" viewBox="0 0 36 36"><defs><linearGradient id="ab8" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a9a3a"/><stop offset="1" stop-color="#2a5a1a"/></linearGradient></defs><circle cx="18" cy="18" r="12" fill="none" stroke="url(#ab8)" stroke-width="2" stroke-dasharray="4 3"/><path d="M8 10 L12 8 L10 12 Z M28 10 L24 8 L26 12 Z M8 26 L12 28 L10 24 Z M28 26 L24 28 L26 24 Z" fill="#3a6a2a" stroke="#1a4a0a" stroke-width="0.5"/><path d="M18 6 L18 8 M18 28 L18 30 M6 18 L8 18 M28 18 L30 18" stroke="#2a5a1a" stroke-width="1.2"/><path d="M12 12 L14 10 M24 12 L22 10 M12 24 L14 26 M24 24 L22 26" stroke="#1a4a0a" stroke-width="0.8"/><circle cx="18" cy="18" r="3" fill="#5cec8e" opacity="0.3"/></svg></div><div><span class="rarity-badge rarity-rare">Rare</span><strong>Bramble Aura</strong></div></div><p>Reflect 20% of incoming damage to attackers. Stackable up to 3x.</p></div>
+                    <div class="docs-card"><div class="docs-card-top"><div class="docs-icon-svg"><svg width="40" height="40" viewBox="0 0 36 36"><defs><linearGradient id="ab9" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ddeeff"/><stop offset="1" stop-color="#8899bb"/></linearGradient></defs><line x1="6" y1="6" x2="28" y2="28" stroke="url(#ab9)" stroke-width="1.5"/><path d="M28 28 L24 25 M28 28 L25 24" stroke="url(#ab9)" stroke-width="1" fill="none"/><path d="M6 6 L9 4 L9 8 Z" fill="url(#ab9)"/><path d="M10 10 C8 14 12 16 10 10 C14 12 12 8 10 10 Z" fill="#cc2244" opacity="0.8"/><path d="M10 10 L10 14" stroke="#881122" stroke-width="0.5"/><circle cx="14" cy="18" r="2.5" fill="#cc2244" stroke="#881122" stroke-width="0.5"/><path d="M14 15.5 C13 17 13 19 14 20.5 C15 19 15 17 14 15.5 Z" fill="#ff4466"/><path d="M18 22 C17 24 17 26 18 27 C19 26 19 24 18 22 Z" fill="#cc2244" opacity="0.6"/></svg></div><div><span class="rarity-badge rarity-epic">Epic</span><strong>Cursed Arrow</strong></div></div><p>Heal 7% of all damage dealt (lifesteal). Stackable up to 3x.</p></div>
+                    <div class="docs-card"><div class="docs-card-top"><div class="docs-icon-svg"><svg width="40" height="40" viewBox="0 0 36 36"><defs><linearGradient id="ab10" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffdd44"/><stop offset="1" stop-color="#a08020"/></linearGradient></defs><path d="M18 3 L20.5 10 L28 10 L22 14.5 L24.5 22 L18 17.5 L11.5 22 L14 14.5 L8 10 L15.5 10 Z" fill="url(#ab10)" stroke="#8a6010" stroke-width="0.8"/><path d="M28 3 C26 6 25 10 26 14 C27 17 29 18 31 20 C32 16 32 10 28 3 Z" fill="#cc3333" stroke="#882222" stroke-width="0.4"/><path d="M28 3 L30 20" stroke="#aa2222" stroke-width="0.4"/><circle cx="18" cy="12" r="1.5" fill="#ffee66" opacity="0.6"/></svg></div><div><span class="rarity-badge rarity-legendary">Legendary</span><strong>Legendary Outlaw</strong></div></div><p>+20% XP from every kill. Level up faster. Stackable up to 3x.</p></div>
+                </div>
+            </div>
+
+            <div class="docs-section">
+                <h3><svg class="section-icon" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="cr1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4af37"/><stop offset="1" stop-color="#8a6020"/></linearGradient></defs><path d="M3 8 L5 5 L7 9 L9 5 L12 7 L15 5 L17 9 L19 5 L21 8 L21 14 L3 14 Z" fill="url(#cr1)" stroke="#6a4810" stroke-width="0.8"/><circle cx="5" cy="5" r="1.2" fill="#d4af37"/><circle cx="12" cy="7" r="1.2" fill="#ff4444"/><circle cx="19" cy="5" r="1.2" fill="#d4af37"/><line x1="4" y1="17" x2="14" y2="21" stroke="#ccccc0" stroke-width="1.5"/><line x1="20" y1="17" x2="10" y2="21" stroke="#ccccc0" stroke-width="1.5"/><path d="M14 21 L16 19 M10 21 L8 19" stroke="#6b4423" stroke-width="1"/></svg> Enemies — The Sheriff's Forces</h3>
+                <div class="docs-grid">
+                    <div class="docs-card enemy-card"><div class="docs-card-top"><div class="docs-icon-svg"><svg width="44" height="44" viewBox="0 0 40 40"><defs><linearGradient id="eg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#aa2222"/><stop offset="1" stop-color="#6a0a0a"/></linearGradient></defs><rect x="13" y="15" width="14" height="16" rx="1" fill="url(#eg)" stroke="#4a0000" stroke-width="0.5"/><rect x="11" y="8" width="18" height="9" rx="1" fill="#888890" stroke="#555560" stroke-width="0.5"/><rect x="12" y="9" width="3" height="3" fill="#220000"/><rect x="22" y="9" width="3" height="3" fill="#220000"/><path d="M16 11 L17 13 L18 11" stroke="#ff4444" stroke-width="0.5" fill="none" opacity="0.6"/><path d="M24 11 L23 13 L22 11" stroke="#ff4444" stroke-width="0.5" fill="none" opacity="0.6"/><rect x="13" y="5" width="14" height="4" fill="#888890"/><path d="M14 5 L14 3 L16 5 M26 5 L26 3 L24 5" fill="#888890" stroke="#555560" stroke-width="0.3"/><rect x="12" y="31" width="6" height="6" rx="0.5" fill="#3a2818"/><rect x="22" y="31" width="6" height="6" rx="0.5" fill="#3a2818"/><rect x="27" y="18" width="1.5" height="14" fill="#ccc"/><path d="M27 18 L26 16 L28 16 Z" fill="#ccc"/><rect x="26" y="30" width="3.5" height="1.5" fill="#d4af37"/><rect x="8" y="18" width="5" height="12" rx="0.5" fill="#771111"/></svg></div><div><span class="rarity-badge rarity-common">Minion</span><strong>Royal Guard</strong></div></div><p>Common foot soldier in red tunic. Modest health, melee only. Weak alone, deadly in numbers.</p><div class="docs-stats"><span class="stat-pill hp">30 HP</span><span class="stat-pill dmg">8 DMG</span><span class="stat-pill xp">15 XP</span></div></div>
+                    <div class="docs-card enemy-card"><div class="docs-card-top"><div class="docs-icon-svg"><svg width="44" height="44" viewBox="0 0 40 40"><defs><linearGradient id="ec" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3a7a"/><stop offset="1" stop-color="#1a1a44"/></linearGradient></defs><path d="M12 6 Q20 2 28 6 L28 16 Q20 18 12 16 Z" fill="url(#ec)" stroke="#0a0a22" stroke-width="0.5"/><rect x="13" y="15" width="14" height="16" rx="1" fill="#2a2a5a" stroke="#0a0a22" stroke-width="0.5"/><rect x="14" y="10" width="4" height="4" fill="#1a1a44"/><rect x="16" y="11" width="2" height="2" fill="#55aaff"/><rect x="22" y="11" width="2" height="2" fill="#55aaff"/><rect x="12" y="31" width="6" height="6" rx="0.5" fill="#3a2818"/><rect x="22" y="31" width="6" height="6" rx="0.5" fill="#3a2818"/><path d="M4 22 Q16 18 28 22" fill="none" stroke="#4a2a10" stroke-width="1.5"/><rect x="14" y="20" width="2" height="8" fill="#4a2a10"/><line x1="15" y1="20" x2="32" y2="20" stroke="#00ddff" stroke-width="1.5"/><path d="M32 20 L28 18 M32 20 L28 22" stroke="#00ddff" stroke-width="1" fill="none"/><circle cx="32" cy="20" r="2" fill="#00ddff" opacity="0.3"/></svg></div><div><span class="rarity-badge rarity-rare">Ranged</span><strong>Crossbowman</strong></div></div><p>Blue-clad ranged unit. Keeps distance, fires glowing cyan bolts. Faster, frailer — prioritize these!</p><div class="docs-stats"><span class="stat-pill hp">22 HP</span><span class="stat-pill dmg">6 DMG</span><span class="stat-pill xp">12 XP</span></div></div>
+                    <div class="docs-card enemy-card"><div class="docs-card-top"><div class="docs-icon-svg"><svg width="44" height="44" viewBox="0 0 40 40"><defs><linearGradient id="ek" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9999aa"/><stop offset="1" stop-color="#555566"/></linearGradient><linearGradient id="eks" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bbbbcc"/><stop offset="1" stop-color="#666677"/></linearGradient></defs><rect x="12" y="13" width="16" height="19" rx="1" fill="url(#ek)" stroke="#3a3a4a" stroke-width="0.6"/><rect x="10" y="7" width="20" height="8" rx="1" fill="url(#eks)" stroke="#3a3a4a" stroke-width="0.5"/><rect x="14" y="9" width="3" height="3" fill="#1a0a0a"/><rect x="23" y="9" width="3" height="3" fill="#1a0a0a"/><path d="M16 11 L17 13 L18 11" stroke="#ff4444" stroke-width="0.5" fill="none"/><path d="M24 11 L23 13 L22 11" stroke="#ff4444" stroke-width="0.5" fill="none"/><rect x="11" y="6" width="18" height="3" fill="url(#eks)"/><path d="M13 6 L13 3 L15 6 M27 6 L27 3 L25 6" fill="url(#eks)" stroke="#3a3a4a" stroke-width="0.3"/><rect x="11" y="32" width="7" height="6" rx="0.5" fill="#5a5a6a"/><rect x="22" y="32" width="7" height="6" rx="0.5" fill="#5a5a6a"/><path d="M6 14 L6 28 L12 26 L12 16 Z" fill="url(#eks)" stroke="#3a3a4a" stroke-width="0.5"/><path d="M6 14 L9 12 L9 30 L6 28" stroke="#3a3a4a" stroke-width="0.4" fill="none"/><rect x="28" y="10" width="2" height="24" fill="#ccc" stroke="#888" stroke-width="0.3"/><path d="M29 10 L27 7 L31 7 Z" fill="#ccc"/><rect x="27" y="32" width="4" height="2" fill="#d4af37"/></svg></div><div><span class="rarity-badge rarity-epic">Elite</span><strong>Armored Knight</strong></div></div><p>Heavy melee bruiser in plate armor. Slow, tanky, hits like a truck. Appears after 3 minutes.</p><div class="docs-stats"><span class="stat-pill hp">85 HP</span><span class="stat-pill dmg">18 DMG</span><span class="stat-pill xp">30 XP</span></div></div>
+                </div>
+            </div>
+
+            <div class="docs-section">
+                <h3><svg class="section-icon" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="sk1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8e8d0"/><stop offset="1" stop-color="#9a9a80"/></linearGradient></defs><path d="M12 3 C7 3 4 6 4 11 C4 13 5 14 6 15 L6 18 L8 18 L8 20 L16 20 L16 18 L18 18 L18 15 C19 14 20 13 20 11 C20 6 17 3 12 3 Z" fill="url(#sk1)" stroke="#6a6a50" stroke-width="0.8"/><circle cx="9" cy="10" r="2" fill="#1a0a0a"/><circle cx="15" cy="10" r="2" fill="#1a0a0a"/><circle cx="9" cy="10" r="0.8" fill="#ff0000"/><circle cx="15" cy="10" r="0.8" fill="#ff0000"/><path d="M11 14 L12 13 L13 14" stroke="#6a6a50" stroke-width="0.8" fill="none"/><path d="M5 3 L7 6 M12 2 L12 5 M19 3 L17 6 M3 5 L5 7 M21 5 L19 7" stroke="#d4af37" stroke-width="1" fill="none"/></svg> Bosses — Legends of the Crown</h3>
+                <p style="margin-bottom:14px">When a boss spawns, <strong>all small enemies are cleared from the arena</strong>. It is a pure 1v1 duel — no distractions, no mercy. Each boss wields <strong>3 devastating special attacks</strong> fired every 3-5 seconds. Their HP bar appears at the top of your screen. These are near-impossible encounters — only the most skilled outlaws will survive.</p>
+                <div class="docs-grid">
+                    <div class="docs-card boss-card"><div class="docs-card-top"><div class="docs-icon-svg"><svg width="44" height="44" viewBox="0 0 40 40"><defs><radialGradient id="bs1" cx="0.5" cy="0.3"><stop offset="0" stop-color="#cc1111"/><stop offset="1" stop-color="#220000"/></radialGradient></defs><circle cx="20" cy="20" r="18" fill="url(#bs1)" opacity="0.3"/><circle cx="20" cy="20" r="14" fill="none" stroke="#ff0000" stroke-width="1" opacity="0.5"/><circle cx="20" cy="20" r="11" fill="none" stroke="#aa0000" stroke-width="0.8" opacity="0.4"/><rect x="12" y="14" width="16" height="16" rx="1" fill="#4a0000" stroke="#220000" stroke-width="0.6"/><rect x="10" y="7" width="20" height="8" rx="1" fill="#6a0000" stroke="#220000" stroke-width="0.5"/><rect x="14" y="9" width="3" height="3" fill="#ff0000"/><rect x="23" y="9" width="3" height="3" fill="#ff0000"/><circle cx="15.5" cy="10.5" r="0.8" fill="#ffaa00"/><circle cx="24.5" cy="10.5" r="0.8" fill="#ffaa00"/><path d="M11 7 L13 2 L15 7 L17 2 L19 7 L21 2 L23 7 L25 2 L27 7 L29 2" fill="none" stroke="#ff0000" stroke-width="1.5" stroke-linejoin="round"/><circle cx="13" cy="2" r="1" fill="#ff0000"/><circle cx="20" cy="2" r="1" fill="#ff0000"/><circle cx="27" cy="2" r="1" fill="#ff0000"/><rect x="11" y="30" width="7" height="7" rx="0.5" fill="#330000"/><rect x="22" y="30" width="7" height="7" rx="0.5" fill="#330000"/><path d="M30 15 L33 12 L33 30 L30 33" fill="#660000" stroke="#220000" stroke-width="0.4"/></svg></div><div><span class="rarity-badge rarity-boss">Boss 1 · 4 min</span><strong>The Sheriff of Nottingham</strong></div></div><p>Robin Hood's sworn enemy. A towering figure in blood-red armor with a crown of dark spikes and eyes that burn with fury.</p><div class="docs-stats"><span class="stat-pill hp">1200 HP</span><span class="stat-pill dmg">28 DMG</span><span class="stat-pill xp">200 XP</span></div><div class="docs-stats"><span class="stat-pill special">Bolt Fan</span><span class="stat-pill special">Charge Slam</span><span class="stat-pill special">Fire Cone</span></div></div>
+                    <div class="docs-card boss-card"><div class="docs-card-top"><div class="docs-icon-svg"><svg width="44" height="44" viewBox="0 0 40 40"><defs><radialGradient id="bs2" cx="0.5" cy="0.3"><stop offset="0" stop-color="#6a00cc"/><stop offset="1" stop-color="#0a0a0a"/></radialGradient></defs><circle cx="20" cy="20" r="18" fill="url(#bs2)" opacity="0.3"/><circle cx="20" cy="20" r="14" fill="none" stroke="#aa00ff" stroke-width="1" opacity="0.5"/><circle cx="20" cy="20" r="11" fill="none" stroke="#660099" stroke-width="0.8" opacity="0.4"/><rect x="12" y="14" width="16" height="16" rx="1" fill="#1a1a1a" stroke="#0a0a0a" stroke-width="0.6"/><rect x="10" y="7" width="20" height="8" rx="1" fill="#0a0a0a" stroke="#0a0a0a" stroke-width="0.5"/><rect x="14" y="9" width="3" height="3" fill="#aa00ff"/><rect x="23" y="9" width="3" height="3" fill="#aa00ff"/><circle cx="15.5" cy="10.5" r="0.8" fill="#cc66ff"/><circle cx="24.5" cy="10.5" r="0.8" fill="#cc66ff"/><path d="M11 7 L13 2 L15 7 L17 2 L19 7 L21 2 L23 7 L25 2 L27 7 L29 2" fill="none" stroke="#aa00ff" stroke-width="1.5" stroke-linejoin="round"/><circle cx="13" cy="2" r="1" fill="#aa00ff"/><circle cx="20" cy="2" r="1" fill="#aa00ff"/><circle cx="27" cy="2" r="1" fill="#aa00ff"/><rect x="11" y="30" width="7" height="7" rx="0.5" fill="#0a0a0a"/><rect x="22" y="30" width="7" height="7" rx="0.5" fill="#0a0a0a"/><path d="M30 12 L32 8 L31 28 L29 32" fill="#aa00ff" stroke="#660099" stroke-width="0.5"/><circle cx="32" cy="8" r="1.5" fill="#cc66ff" opacity="0.6"/></svg></div><div><span class="rarity-badge rarity-boss">Boss 2 · 8 min</span><strong>Guy of Gisborne</strong></div></div><p>Ruthless bounty hunter clad in black armor. Faster and tougher than the Sheriff. His blades fill the air with death.</p><div class="docs-stats"><span class="stat-pill hp">1800 HP</span><span class="stat-pill dmg">34 DMG</span><span class="stat-pill xp">280 XP</span></div><div class="docs-stats"><span class="stat-pill special">Blade Storm</span><span class="stat-pill special">Dash Strike</span><span class="stat-pill special">Dark Pulse</span></div></div>
+                    <div class="docs-card boss-card"><div class="docs-card-top"><div class="docs-icon-svg"><svg width="44" height="44" viewBox="0 0 40 40"><defs><radialGradient id="bs3" cx="0.5" cy="0.3"><stop offset="0" stop-color="#ffdd22"/><stop offset="1" stop-color="#4a3000"/></radialGradient></defs><circle cx="20" cy="20" r="18" fill="url(#bs3)" opacity="0.3"/><circle cx="20" cy="20" r="14" fill="none" stroke="#ffdd00" stroke-width="1" opacity="0.5"/><circle cx="20" cy="20" r="11" fill="none" stroke="#ccaa00" stroke-width="0.8" opacity="0.4"/><rect x="11" y="13" width="18" height="18" rx="1" fill="#8b6914" stroke="#4a3000" stroke-width="0.6"/><rect x="9" y="6" width="22" height="9" rx="1" fill="#d4af37" stroke="#4a3000" stroke-width="0.5"/><rect x="14" y="8" width="3" height="3" fill="#ffdd00"/><rect x="23" y="8" width="3" height="3" fill="#ffdd00"/><circle cx="15.5" cy="9.5" r="1" fill="#ffee44"/><circle cx="24.5" cy="9.5" r="1" fill="#ffee44"/><path d="M10 6 L12 1 L14 6 L16 1 L18 6 L20 1 L22 6 L24 1 L26 6 L28 1 L30 6" fill="none" stroke="#ffdd00" stroke-width="1.5" stroke-linejoin="round"/><circle cx="12" cy="1" r="1.2" fill="#ffdd00"/><circle cx="20" cy="1" r="1.2" fill="#ffdd00"/><circle cx="28" cy="1" r="1.2" fill="#ffdd00"/><rect x="10" y="31" width="8" height="8" rx="0.5" fill="#6b4900"/><rect x="22" y="31" width="8" height="8" rx="0.5" fill="#6b4900"/><path d="M31 12 L35 6 L34 32 L30 36" fill="#d4af37" stroke="#8a6020" stroke-width="0.5"/><path d="M35 6 L33 4 L37 4 L37 8 Z" fill="#ffee44"/><circle cx="35" cy="6" r="2" fill="#ffdd00" opacity="0.4"/></svg></div><div><span class="rarity-badge rarity-boss">Boss 3 · 12 min</span><strong>Prince John's Champion</strong></div></div><p>Final boss. A golden-armored titan of enormous size. The ultimate test — survive this and you become a Legend of Sherwood.</p><div class="docs-stats"><span class="stat-pill hp">2600 HP</span><span class="stat-pill dmg">42 DMG</span><span class="stat-pill xp">400 XP</span></div><div class="docs-stats"><span class="stat-pill special">Golden Rain</span><span class="stat-pill special">Earthquake</span><span class="stat-pill special">Beam Sweep</span></div></div>
+                </div>
+            </div>
+
+            <div class="docs-section">
+                <h3><svg class="section-icon" viewBox="0 0 24 24" fill="none"><defs><radialGradient id="tr1" cx="0.5" cy="0.4"><stop offset="0" stop-color="#4a8a2a"/><stop offset="1" stop-color="#1a3a0a"/></radialGradient></defs><circle cx="12" cy="8" r="7" fill="url(#tr1)"/><path d="M9 6 Q11 4 12 6 Q13 4 15 6" stroke="#3a6a1a" stroke-width="0.5" fill="none"/><rect x="10.5" y="14" width="3" height="8" rx="0.5" fill="#5a3a1a"/><path d="M12 17 C10 17 8 16 7 14 M12 17 C14 17 16 16 17 14" stroke="#5a3a1a" stroke-width="1" fill="none"/><path d="M3 16 L6 16 L5 17 L8 17" stroke="#d4af37" stroke-width="0.8" fill="none" opacity="0.6"/><path d="M21 16 L18 16 L19 17 L16 17" stroke="#d4af37" stroke-width="0.8" fill="none" opacity="0.6"/></svg> The World — Sherwood Forest</h3>
+                <p>The arena is Sherwood Forest — dense oaks with swaying canopies, mossy boulders worn smooth by centuries, fallen logs covered in lichen, wildflowers dotting the moss. Trees form a living wall at the edges, impossible to pass. Sunlight filters golden through the canopy. The wind never stops: trees sway, leaves drift, the forest breathes.</p>
+                <p>Scattered cover — trees, rocks, bushes, logs — blocks movement and breaks line of sight from crossbowmen. Use them. Circle-strafe. Disappear. Reappear behind a different tree. The forest is your ally as much as your battlefield.</p>
+            </div>
+
+            </div>
+        </div>
+    </div>
+
+<!-- ===== GUIDE / HOW TO PLAY PANEL ===== -->
+    <div id="guidePanel" class="overlay hidden">
+        <div class="docs-content">
+            <button class="close-btn" data-close="guidePanel">✕</button>
+            <div class="docs-hero"><h2 class="docs-title">HOW TO PLAY</h2><p class="docs-subtitle">Master the Forest</p></div><div class="docs-divider"><div class="docs-divider-line"></div><div class="docs-divider-diamond"></div><div class="docs-divider-line"></div></div><div class="docs-body">
+
+            <div class="docs-section">
+                <h3><svg class="section-icon" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="kb1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a4a5a"/><stop offset="1" stop-color="#2a2a3a"/></linearGradient></defs><rect x="2" y="9" width="16" height="10" rx="1.5" fill="url(#kb1)" stroke="#1a1a2a" stroke-width="0.8"/><rect x="4" y="11" width="2" height="2" rx="0.3" fill="#6a6a7a"/><rect x="7" y="11" width="2" height="2" rx="0.3" fill="#6a6a7a"/><rect x="10" y="11" width="2" height="2" rx="0.3" fill="#6a6a7a"/><rect x="13" y="11" width="2" height="2" rx="0.3" fill="#6a6a7a"/><rect x="5" y="15" width="10" height="1.5" rx="0.3" fill="#6a6a7a"/><path d="M18 8 C20 6 21 4 22 2 C21 5 20 7 18 9 Z" fill="#cc3333" stroke="#882222" stroke-width="0.5"/><path d="M18 9 L15 12" stroke="#5a3a1a" stroke-width="1.2" stroke-linecap="round"/></svg> PC / Laptop Controls</h3>
+                <div class="guide-control"><span class="key-badge">W A S D</span><span>or</span><span class="key-badge">↑ ← ↓ →</span><span>Move in any direction. Character auto-faces nearest enemy when attacking.</span></div>
+                <div class="guide-control"><span class="key-badge">AUTO</span><span>Your bow fires automatically — no clicking needed. Weapons target the closest enemy in range.</span></div>
+                <div class="guide-control"><span class="key-badge">ESC</span><span>Pause the game. Opens pause menu with Resume and Quit.</span></div>
+            </div>
+
+            <div class="docs-section">
+                <h3><svg class="section-icon" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="ph1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a4a5a"/><stop offset="1" stop-color="#2a2a3a"/></linearGradient></defs><rect x="6" y="3" width="11" height="18" rx="2" fill="url(#ph1)" stroke="#1a1a2a" stroke-width="0.8"/><rect x="8" y="5" width="7" height="11" rx="0.5" fill="#1a2a1a"/><circle cx="11.5" cy="18.5" r="1" fill="none" stroke="#6a6a7a" stroke-width="0.6"/><path d="M17 2 C19 1 20 3 21 1 C20 4 18 5 16 6 Z" fill="#cc3333" stroke="#882222" stroke-width="0.5" transform="rotate(30 18 4)"/></svg> Mobile Controls</h3>
+                <div class="guide-control"><span class="key-badge">JOYSTICK</span><span>Virtual joystick in bottom-center. Drag to move, release to stop. Further drag = faster.</span></div>
+                <div class="guide-control"><span class="key-badge">AUTO</span><span>Weapons fire automatically. Focus on dodging and positioning.</span></div>
+                <div class="guide-control"><span class="key-badge">❚❚</span><span>Pause button in bottom-right. Tap to pause and resume.</span></div>
+                <p class="guide-tip">Tip: Keep your thumb on the joystick at all times. Use your other hand to tap ability choices during level-ups.</p>
+            </div>
+
+            <div class="docs-section">
+                <h3><svg class="section-icon" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="ar1" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#c0c0c0"/><stop offset="1" stop-color="#888888"/></linearGradient></defs><line x1="3" y1="12" x2="18" y2="12" stroke="url(#ar1)" stroke-width="1.5"/><path d="M18 12 L15 10 M18 12 L15 14" stroke="#c0c0c0" stroke-width="1.2" fill="none"/><path d="M3 12 L5 11 L5 13 Z" fill="#d4af37"/><path d="M6 9 L8 9 M5 15 L7 15 M4 7 L7 7" stroke="#d4af37" stroke-width="0.8" opacity="0.5"/><path d="M10 9 C9 7 11 6 10 4 M12 15 C13 17 11 18 12 20" fill="none" stroke="#ff6644" stroke-width="0.8" opacity="0.5"/></svg> Core Mechanics</h3>
+                <p><strong>Combat:</strong> All attacks are automatic. Weapons fire on cooldown, targeting the nearest enemy. Your job is positioning and survival.</p>
+                <p><strong>Movement is survival:</strong> Enemies chase relentlessly. Standing still = death. Always be moving, kiting in circles, using obstacles to break their path.</p>
+                <p><strong>Contact damage:</strong> Touching an enemy deals damage and grants 0.8s invulnerability (character flashes). Use this to escape crowds.</p>
+                <p><strong>Ranged enemies:</strong> Crossbowmen keep distance and fire blue bolts. Dodge by changing direction unpredictably.</p>
+            </div>
+
+            <div class="docs-section">
+                <h3><svg class="section-icon" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="lv1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4af37"/><stop offset="1" stop-color="#8a6020"/></linearGradient><linearGradient id="lv2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5cec8e"/><stop offset="1" stop-color="#2a9a4a"/></linearGradient></defs><path d="M12 3 L7 8 L10 8 L10 14 L14 14 L14 8 L17 8 Z" fill="url(#lv1)" stroke="#6a4810" stroke-width="0.8"/><path d="M12 16 L10 19 L14 19 Z" fill="url(#lv2)" stroke="#2a8a4a" stroke-width="0.6"/><circle cx="12" cy="19" r="0.8" fill="#88ee99"/><path d="M5 18 L4 20 M19 18 L20 20" stroke="#d4af37" stroke-width="0.8" opacity="0.4"/></svg> The Leveling System</h3>
+                <p><strong>XP &amp; Hearts:</strong> Every enemy drops an XP gem. Walk near gems to collect them (or get Arrow Retrieval for magnet range). Each gem grants XP. Additionally, there is a <strong>5% chance</strong> (15% for bosses) to drop a <strong>red heart</strong> that heals 30% of your max HP — grab it fast!</p>
+                <p><strong>Leveling up:</strong> Each level +5 max HP and heals 10. XP needed grows ~18% per level.</p>
+                <p><strong>The 5-Level Choice:</strong> Every 5 levels (5, 10, 15, 20...), the game pauses and shows 3 random upgrade cards. Pick one:</p>
+                <ul class="guide-list">
+                    <li><strong>New Weapons</strong> — Add a weapon you don't own (max 4 total).</li>
+                    <li><strong>Weapon Upgrades</strong> — Improve existing weapons (more damage, projectiles, fire rate). Up to 5 levels each.</li>
+                    <li><strong>Abilities</strong> — Passive boosts (speed, HP, damage, lifesteal, etc.). Most stack up to 3x. Arrow Volley is once-only.</li>
+                </ul>
+                <p><strong>Strategy:</strong> Early game — grab new weapons. Mid game — Multi Shot + damage upgrades. Late game — HP and regen to survive bosses.</p>
+            </div>
+
+            <div class="docs-section">
+                <h3><svg class="section-icon" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="sk1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8e8d0"/><stop offset="1" stop-color="#9a9a80"/></linearGradient></defs><path d="M12 3 C7 3 4 6 4 11 C4 13 5 14 6 15 L6 18 L8 18 L8 20 L16 20 L16 18 L18 18 L18 15 C19 14 20 13 20 11 C20 6 17 3 12 3 Z" fill="url(#sk1)" stroke="#6a6a50" stroke-width="0.8"/><circle cx="9" cy="10" r="2" fill="#1a0a0a"/><circle cx="15" cy="10" r="2" fill="#1a0a0a"/><circle cx="9" cy="10" r="0.8" fill="#ff0000"/><circle cx="15" cy="10" r="0.8" fill="#ff0000"/><path d="M11 14 L12 13 L13 14" stroke="#6a6a50" stroke-width="0.8" fill="none"/><path d="M5 3 L7 6 M12 2 L12 5 M19 3 L17 6 M3 5 L5 7 M21 5 L19 7" stroke="#d4af37" stroke-width="1" fill="none"/></svg> Boss Encounters</h3>
+                <p>A boss spawns every 4 minutes if none is active. A dramatic banner announces the boss (no background, slow blink). When a boss appears, ALL small enemies are cleared — it is a pure 1v1 duel! Each boss has 3 devastating special attacks. Bosses have massive HP, hit hard, and drop large XP bounties — often 1-2 free levels. Survive 12 minutes to win!</p>
+                <p><strong>Boss strategy:</strong> Never fight in a corner. Keep moving in wide circles. Use orbiting weapons for chip damage, piercing/burst for direct hits. If HP drops low, create distance and rely on lifesteal or regen.</p>
+            </div>
+
+            <div class="docs-section">
+                <h3><svg class="section-icon" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="qt1" x1="0.3" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#ff4444"/><stop offset="1" stop-color="#882222"/></linearGradient></defs><path d="M16 2 C12 5 10 9 11 14 C12 17 14 19 17 21 C18 17 18 12 16 2 Z" fill="url(#qt1)"/><path d="M16 2 L17 21" stroke="#aa2222" stroke-width="0.6"/><path d="M16 7 C14 7.5 13 9 13 11 M16 7 C18 7.5 19 9 19 11" stroke="#ff6666" stroke-width="0.5" fill="none" opacity="0.6"/><line x1="17" y1="21" x2="6" y2="21" stroke="#d4af37" stroke-width="1.5" stroke-linecap="round"/><path d="M6 21 L4 19 L3 20" stroke="#d4af37" stroke-width="1" fill="none"/></svg> Pro Tips</h3>
+                <ul class="guide-list">
+                    <li><strong>Keep moving.</strong> A stationary outlaw is a dead outlaw.</li>
+                    <li><strong>Collect XP gems aggressively.</strong> XP = levels = power. Walk close to gems to pick them up!</li>
+                    <li><strong>Stack synergies.</strong> Sharpshooter + Quick Draw + Arrow Volley = devastating firepower.</li>
+                    <li><strong>Prioritize crossbowmen.</strong> They chip HP from range.</li>
+                    <li><strong>Use obstacles.</strong> Circle-strafe trees to split crowds.</li>
+                    <li><strong>Don't panic at level-up.</strong> The game pauses. Read all 3 cards.</li>
+                    <li><strong>Always finish bosses.</strong> The XP bounty is worth the risk.</li>
+                </ul>
+            </div>
+
+            <div class="docs-section">
+                <h3><svg class="section-icon" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="ds1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a8a2a"/><stop offset="1" stop-color="#2a4a1a"/></linearGradient></defs><path d="M2 18 Q8 16 12 13 Q16 10 22 5" fill="none" stroke="url(#ds1)" stroke-width="2" stroke-linecap="round"/><path d="M22 5 L19 6 L20 8" fill="#d4af37" stroke="#8a6020" stroke-width="0.6"/><path d="M2 18 L2 21 L22 21" stroke="#3a3a2a" stroke-width="1" fill="none"/><path d="M6 18 L6 19 M10 16 L10 17 M14 13 L14 14 M18 9 L18 10" stroke="#ff6644" stroke-width="0.8" opacity="0.6"/></svg> Difficulty Scaling</h3>
+                <p>The forest gets deadlier over time. Enemy HP and damage scale ~10% per minute. Spawn rate increases gradually. After 3 minutes, Armored Knights join. Bosses grow stronger each cycle. Survive 12 minutes to achieve victory and become a Legend of Sherwood!</p>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <div id="floatingTexts"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/game.js?v=9"></script>
+</body>
+</html>

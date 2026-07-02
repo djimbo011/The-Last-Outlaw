@@ -1,0 +1,9 @@
+{
+  // Cloudflare Workers static-assets config for thelastoutlaw.app
+  // Pure static site (no Worker script) — serves the repo root as assets.
+  "name": "thelastoutlaw",
+  "compatibility_date": "2025-01-01",
+  "assets": {
+    "directory": "./"
+  }
+}
